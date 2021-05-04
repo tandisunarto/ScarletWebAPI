@@ -17,9 +17,12 @@ namespace ScarletWebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            this.env = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -31,7 +34,7 @@ namespace ScarletWebAPI
                 .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme,
                     options => {
                         options.ApiName = "weatherapi";
-                        options.Authority = "https://localhost:5001";
+                        options.Authority = Configuration[$"AuthorityUrl:{env.EnvironmentName}"];
                     });
 
             services.AddControllers();
@@ -42,7 +45,7 @@ namespace ScarletWebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             if (env.IsDevelopment())
             {
